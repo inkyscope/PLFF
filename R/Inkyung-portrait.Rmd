@@ -20,7 +20,7 @@ library(here)
 ```{r}
 # Read in image and convert to grayscale
 
-img <- image_read("images/inkyung.jpg") %>% 
+img <- image_read(here::here("images", "inkyung.jpg")) %>% 
   image_convert(colorspace = "gray")
 
 # Get dimensions
@@ -50,7 +50,7 @@ img_df <- as.data.frame.table(img_array) %>%
 
 # Colors, fill and background
 col_fill <- "black"
-col_bg <- "#f1e34c"
+col_bg <- "#ffc50c"
 ```
 
 
@@ -65,7 +65,7 @@ zain_point <- img_df %>%
   theme(legend.position = "none", plot.background = element_rect(fill = col_bg, color = NA)) 
 
 
-  ggsave(here("figures", "Inkyung.png"), height = 8, width = 7)
+  ggsave(here("figures", "Inkyung-Point.png"), height = 8, width = 7)
 ```
 
 ```{r}
