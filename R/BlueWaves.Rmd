@@ -78,11 +78,8 @@ ggplot(dat_df) +
   theme_void() +
   theme(
     legend.position = "none",
-    plot.background = element_rect(fill = "black")
+    plot.background = element_rect(fill = "#1b1f2b")  # "#ffc50c", #006766"
   ) 
 
-  ggsave(here::here("figures", "flow.png"), dpi = 320, width = 7, height = 7)
+  ggsave(here::here("figures", "BlueWaves.png"), dpi = 320, width = 7, height = 7)
 ```
-
-
-
