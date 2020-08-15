@@ -54,7 +54,7 @@ img_df <- as.data.frame.table(img_array) %>%
 
 # Colors, fill and background
 col_fill <- "black"
-col_bg <- "#e335c2"
+col_bg <- "#d6146b"
 ```
 
 
