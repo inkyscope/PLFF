@@ -2,8 +2,8 @@
 another personal take for a generative art enjoined by color from point, line, plane (Punkt , Linie ,  Fläche, and Farbe)
 
 
-### Flow Valley by [aRt by gkaramanis] (https://github.com/gkaramanis/aRt/blob/master/flow/flow.R
-![Flow](https://github.com/inkyscope/PLFF/blob/master/figures/flow.png)
+### Blue Waves by [aRt by gkaramanis] (https://github.com/gkaramanis/aRt/blob/master/flow/flow.R
+![Blue Waves](https://github.com/inkyscope/PLFF/blob/master/figures/BlueWaves.png)
 
 ### Zain Portrait by [aRt]
 ![Zain](https://github.com/inkyscope/PLFF/blob/master/figures/Zain-line.png)
