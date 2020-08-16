@@ -8,7 +8,7 @@ another personal take for a generative art enjoined by color from point, line, p
 ### Zain Portrait by [aRt]
 ![Zain](https://github.com/inkyscope/PLFF/blob/master/figures/Zain-line.png)
 
-### Shapes by [#7, #8, #9, #12, #14]
+### Shapes with [#7, #8, #9, #12, #14]
 ![7, 8, 9, 12, 14](https://github.com/inkyscope/PLFF/blob/master/figures/shapes_black.png)
 
 ### Mountain by [Data Art](https://www.r-graph-gallery.com/137-spring-shapes-data-art.html)
