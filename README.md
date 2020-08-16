@@ -2,7 +2,7 @@
 another personal take for a generative art enjoined by color from point, line, plane (Punkt , Linie ,  Fläche, and Farbe)
 
 
-### Blue Waves by [aRt by gkaramanis](https://github.com/gkaramanis/aRt/blob/master/flow/flow.R)
+### Blue Waves by [aRt](https://github.com/gkaramanis/aRt/blob/master/flow/flow.R)
 ![Blue Waves](https://github.com/inkyscope/PLFF/blob/master/figures/BlueWaves.png)
 
 ### Zain Portrait by [aRt]
