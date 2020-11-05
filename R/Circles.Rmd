@@ -1,0 +1,46 @@
+---
+title: "Circles"
+author: "Sung Inkyung"
+date: '2020 8 17 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+### Source:[@ysamano] (https://twitter.com/ysamano28/status/1280608315249168385)
+```{r}
+library(tidyverse)
+library(ggforce)
+
+g_ang <- pi * (3 - sqrt(5))
+```
+
+
+```{r}
+shapes <- c(12, 14)
+
+
+tibble(point = 1:100,
+       x = sqrt(point) * cos(point * g_ang),
+       y = sqrt(point) * sin(point * g_ang),
+       color = ifelse(point < 27, "color_a", "color_b")) %>% 
+  ggplot() +
+  geom_point(aes(x, y, color = color), size = .5,
+             shapes = as.factor(shapes),
+             fill = NA,
+             size = 6) +
+  geom_circle(aes(x0 = 0,
+                  y0 = 0,
+                  r = 10),
+              size = 0.1) +
+  coord_fixed() +
+  scale_shape_manual(values = shapes) +
+  theme_void() +
+  theme(legend.position = "none")
+```
+
+
+```{r}
+```
+
