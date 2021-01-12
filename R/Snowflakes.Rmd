@@ -1,0 +1,176 @@
+---
+title: "Snowflakes"
+author: "Sung Inkyung"
+date: '2021 1 2 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+### Source[Snowflakes (generative) by Srinivasa Rao] (https://sraorao.netlify.app/post/snowflakes/)
+```{r}
+library(plotrix)
+library(gsl)
+library(RColorBrewer)
+library(data.table)
+
+par(bg = "black")
+colours <- brewer.pal(10, "Set3")
+```
+
+
+```{r}
+# a regular polygon of n sides
+
+draw_regular_polygon <- function(centre.x, centre.y, 
+                                 radius = 0.1, 
+                                 n_sides = 6, 
+                                 rotation = 0, 
+                                 return = TRUE, 
+                                 draw = TRUE, 
+                                 colour = "black", fill = NULL) {
+  # https://stackoverflow.com/questions/7198144/how-to-draw-a-n-sided-regular-polygon-in-cartesian-coordinates
+  vertices = 1:n_sides
+  x = radius * cos(2*pi*vertices/n_sides + rotation) + centre.x
+  y = radius * sin(2*pi*vertices/n_sides + rotation) + centre.y
+  if (draw) { polygon(x, y, border = colour, col = fill) }
+  if (return) { return(data.table(x = x, y = y))}
+}
+
+draw_tiny_hexagons <- function(centre.x, centre.y, ...) {
+  invisible(lapply(1:length(centre.x), function(z) draw_regular_polygon(centre.x, centre.y, ...)))
+}
+```
+
+
+```{r}
+# draw the 'spokes' of a regular polygon
+
+make_spokes <- function(centre.x, centre.y, ...) {
+  polygon.df <- draw_regular_polygon(centre.x, centre.y, draw = FALSE, ...)
+  dt.list <- invisible(lapply(1:nrow(polygon.df), 
+                              function(x) data.table(x = c(centre.x, polygon.df[x][["x"]]), 
+                                                     y = c(centre.y, polygon.df[x][["y"]]))))
+  return(dt.list)
+}
+
+draw_spokes <- function(centre.x, centre.y, colour = "black", ...) {
+  invisible(lapply(make_spokes(centre.x = centre.x, 
+                               centre.y = centre.y, 
+                               col = colour, ...), 
+                   lines, 
+                   col = colour))
+}
+```
+
+
+```{r}
+# draw a star
+make_star <- function(centre.x, centre.y, radius = 0.5, depth = 3, rotation = 0, ...) {
+  df1 <- draw_regular_polygon(centre.x, centre.y, 
+                              radius = radius, 
+                              draw = FALSE, 
+                              rotation = rotation, ...)
+  df2 <- draw_regular_polygon(centre.x, 
+                              centre.y, 
+                              radius = radius/depth, 
+                              draw = FALSE, 
+                              rotation = rotation + pi/6, ...)
+  return(rbind(df1[, c("pt", "id") := .(1:6, c("df1"))], df2[, c("pt", "id") := .(1:6, c("df2"))])[order(pt, id)])
+}
+
+draw_star <- function(centre.x, centre.y, colour = "black", ...) {
+  polygon(make_star(centre.x = centre.x, centre.y = centre.y, ...), border = colour)
+}
+```
+
+```{r}
+# draw the 'spikes' on the spokes of a regular polygon
+make_spikes <- function(centre.x, centre.y, radius = 0.5, spikiness = 1.25, rotation = pi/12, ...) {
+  df1 <- draw_regular_polygon(centre.x, centre.y, radius = radius, draw = FALSE, ...)
+  df2 <- draw_regular_polygon(centre.x, centre.y, radius = radius*spikiness, n_sides = 12, draw = FALSE, rotation = rotation, ...)
+  df1[, pt := 1:6]
+  df2[, pt := rep(1:6, each = 2)]
+  dt.list <- invisible(lapply(1:nrow(df1), function(z) {
+    rbind(df1[z], df2[pt == z][1], df1[z], df2[pt == z][2])
+    }))
+  return(dt.list)
+}
+
+draw_spikes <- function(centre.x, centre.y, colour = "black", ...) {
+  invisible(lapply(make_spikes(centre.x = centre.x, centre.y = centre.y, ...), lines, col = colour))
+}
+```
+
+
+```{r}
+# x, y coordinates of the tips of the spikes
+make_spike_tips <- function(centre.x, centre.y, radius = 0.5, spikiness = 1.25, rotation = pi/12, ...) {
+  df1 <- draw_regular_polygon(centre.x, centre.y, radius = radius, draw = FALSE, ...)
+  df2 <- draw_regular_polygon(centre.x, centre.y, radius = radius*spikiness, n_sides = 12, draw = FALSE, rotation = rotation, ...)
+  df1[, pt := 1:6]
+  df2[, pt := rep(1:6, each = 2)]
+  return(rbind(df1, df2)[, 1:2])
+}
+```
+
+
+```{r}
+# draw the snowflakes
+plot_random <- function(n = 50, limit = 3, set.y, fileno = 0) {
+  random.x <- runif(n, 0, limit)
+  random.y <- set.y
+  random.radius <- runif(n, 0.02, 0.08)
+  random.colours <- sample(colours, n, replace = TRUE)
+  random.rotation <- sample(c(pi/2, pi/3, pi/4, pi/5, pi/6, pi/7, pi/8, pi/9, pi/10), n, replace = TRUE)
+  random.function <- sample(c(draw_star, draw_spokes, draw_spikes), n, replace = TRUE)
+  svg(paste0("snowflakes_", fileno, ".svg"), bg = "black", width = 12, height = 12)
+  plot.new()
+  plot.window(xlim=c(0, limit), ylim = c(0, limit))
+  # plot(-20, -20, xlim = c(0, limit), ylim = c(0, limit))
+  # mapply(function(x, y, radius) draw_star(x, y, radius = radius), random.x, random.y, random.radius)
+  # mapply(function(x, y, radius) draw_spokes(x, y, radius = radius), random.x, random.y, random.radius)
+  invisible(mapply(function(random.function, x, y, radius, colour) random.function(x, y, radius = radius, colour = colour), random.function, random.x, random.y, random.radius, random.colours))
+  invisible(mapply(function(random.function, x, y, radius, colour) draw_spikes(x, y, radius = radius, colour = colour), random.function, random.x, random.y, random.radius, random.colours))
+  random.radius <- runif(n, 0.02, 0.08)
+  invisible(mapply(function(random.function, x, y, radius, colour) draw_spikes(x, y, radius = radius, colour = colour), random.function, random.x, random.y, random.radius, random.colours))
+  invisible(mapply(function(x, y, radius, colour) draw_spokes(x, y, radius = radius, colour = colour), random.x, random.y, random.radius, random.colours))
+  random.function <- sample(c(draw_star, draw_spokes), n, replace = TRUE)
+  invisible(mapply(function(random.function, x, y, radius, colour) random.function(x, y, radius = radius, colour = colour), random.function, random.x, random.y, random.radius, random.colours))
+  random.function <- sample(c(draw_star, draw_spokes), n, replace = TRUE)
+  invisible(mapply(function(random.function, x, y, radius, colour) random.function(x, y, radius = radius, colour = colour), random.function, random.x, random.y, random.radius, random.colours))
+  random.function <- sample(c(draw_star, draw_spokes), n, replace = TRUE)
+  invisible(mapply(function(random.function, x, y, radius, colour) random.function(x, y, radius = radius, colour = colour), random.function, random.x, random.y, random.radius, random.colours))
+  spikes_df <- mapply(function(x, y, radius) make_spike_tips(x, y, radius = radius), random.x, random.y, random.radius)
+  # print("spikes_df")
+  # print(spikes_df$x)
+  x = unlist(as.data.frame(t(spikes_df))$x)
+  y = unlist(as.data.frame(t(spikes_df))$y)
+  spikes_df <- data.frame(x = x, y = y)
+  # print("done")
+  random.radius <- runif(n, 0.0075, 0.01)
+  invisible(mapply(function(x, y, radius, colour) draw_tiny_hexagons(x, y, radius, colour = colour), spikes_df$x, spikes_df$y, random.radius, random.colours))
+  random.radius <- runif(n, 0.06, 0.1)
+  new.selection <- sample(1:n, n/2, replace = FALSE)
+  random.x <- random.x[new.selection]
+  random.y <- random.y[new.selection]
+  invisible(mapply(function(x, y, radius, colour) draw_spokes(x, y, radius = radius, colour = colour), random.x, random.y, random.radius, random.colours))
+  invisible(mapply(function(x, y, radius, colour) draw_spikes(x, y, radius = radius, colour = colour), random.x, random.y, random.radius, random.colours))
+  dev.off()
+}
+
+n = 100
+limit = 3
+y = runif(n, 0, limit)
+plot_random(n = n, limit = limit, set.y = y)
+
+## png 
+##   2
+
+```
+```{r}
+knitr::include_graphics("snowflakes_0.svg")
+
+```
+
