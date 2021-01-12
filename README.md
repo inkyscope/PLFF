@@ -1,6 +1,18 @@
 # PLFF
 another personal take for a generative art enjoined by color from point, line, plane (Punkt , Linie ,  Fläche, and Farbe)
 
+### Truchet Corner Triangles
+![Truchet](https://github.com/inkyscope/PLFF/blob/master/figures/TruchetCornerTriangles.png)
+
+### Truchet Curve Double
+![Truchet](https://github.com/inkyscope/PLFF/blob/master/figures/TruchetCurveDouble.png)
+
+### Truchet Curve
+![Truchet](https://github.com/inkyscope/PLFF/blob/master/figures/TruchetCurve.png)
+
+### Truchet
+![Truchet](https://github.com/inkyscope/PLFF/blob/master/figures/Truchet.png)
+
 ### Crochet
 ![Crochet](https://github.com/inkyscope/PLFF/blob/master/figures/Crochet.png)
 
