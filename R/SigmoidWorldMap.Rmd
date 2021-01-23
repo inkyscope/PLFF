@@ -1,0 +1,100 @@
+---
+title: "sigmoidWorldMap"
+author: "Sung Inkyung"
+date: '2021 1 23'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+### Coding Credit[genuary by gkaramanis] (https://github.com/gkaramanis/aRtist/blob/main/genuary/2021/2021-20/2021-20.R)
+```{r}
+library(tidyverse)
+library(deldir)
+```
+
+
+```{r}
+df <- read.csv("C:/Users/inkyscope/Documents/projectR/PLFF/data/country.csv") %>% 
+  mutate(latitude = as.numeric(latitude),
+         longitude = as.numeric(longitude))
+
+
+ggplot(df, aes(longitude, latitude)) +
+  geom_delaunay_tile(fill = "#e066a3") +
+  geom_delaunay_segment(color = "#776644") +
+  coord_fixed() +
+  theme_void() +
+  theme(legend.position = "none")
+
+```
+```{r}
+library(ggbump)
+library(paletteer)
+```
+### Source[ggbump by davidsjoberg] (https://github.com/davidsjoberg/ggbump)
+
+### Source[Data Novia] (https://www.datanovia.com/en/blog/easy-way-to-expand-color-palettes-in-r/)
+
+```{r}
+library(RColorBrewer)
+
+nb.cols <- 245
+cols <- colorRampPalette(brewer.pal(12, "Set3"))(nb.cols) #colorRampPalette(brewer.pal(9, "GnBu"))(nb.cols)
+
+plot_df <- df %>% 
+  ggplot() +
+  geom_point(aes(longitude, latitude, 
+                 color = factor(longitude/latitude)), 
+             size = 1.5,
+             shape = 18) + # filled square
+  geom_sigmoid(aes(x = longitude/5, 
+                    y = -150, 
+                    xend = longitude, 
+                    yend = latitude, 
+                    group = country, 
+                    color = factor(longitude/latitude)), 
+                direction = "y", 
+                size = 0.2, 
+                smooth = 6) +
+  geom_sigmoid(aes(x = longitude/5, 
+                   y = 150, 
+                   xend = longitude, 
+                   yend = latitude, 
+                   group = country, 
+                   color = factor(longitude/latitude)),
+               direction = "y", 
+               size = 0.2, 
+               smooth = 6) +
+  geom_sigmoid(aes(x = -250, 
+                   y = latitude/4, 
+                   xend = longitude, 
+                   yend = latitude, 
+                   group = country, 
+                   color = factor(longitude/latitude)), 
+               direction = "x", 
+               size = 0.2, 
+               smooth = 6) +
+  geom_sigmoid(aes(x = 250, 
+                   y = latitude/4, 
+                   xend = longitude,
+                   yend = latitude, 
+                   group = country, 
+                   color = factor(longitude/latitude)), 
+               direction = "x", 
+               size = 0.2, 
+               smooth = 6) +
+  # geom_text(aes(longitude, latitude, label = country)) +
+  scale_color_manual(values = cols) +
+  coord_fixed(expand = FALSE) +
+  theme_void() +
+  theme(
+    legend.position = "none",
+    plot.background = element_rect(fill = "grey15", 
+                                   color = NA)
+  ) +
+  ggsave(here::here("figures", "SigmoidWorldMap.png"), dpi = 320,
+         width = 9, height = 6, units = "cm")
+
+```
