@@ -1,6 +1,12 @@
 # PLFF
 another personal take for a generative art enjoined by color from point, line, plane (Punkt , Linie ,  Fläche, and Farbe)
 
+### SigmoidWorldMap
+![SigmoidWorldMap](https://github.com/inkyscope/PLFF/blob/master/figures/SigmoidWorldMap.png)
+
+### DelaunayTriangles
+![DelaunayTriangles](https://github.com/inkyscope/PLFF/blob/master/figures/DelaunayTriangles.png)
+
 ### Polar Circles
 ![Polar](https://github.com/inkyscope/PLFF/blob/master/figures/polar8.png)
 
