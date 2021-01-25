@@ -1,0 +1,59 @@
+---
+title: "Untitled"
+author: "Sung Inkyung"
+date: '2021 1 25 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+### Source[genuay2021 by gkaramanis] (https://github.com/gkaramanis/aRtist/blob/main/genuary/2021/2021-25/2021-25.R)
+### Source [permutation & combination] (https://www.r-bloggers.com/2019/06/learning-r-permutations-and-combinations-with-base-r/)
+```{r Make a grid of permutations of something}
+library(tidyverse)
+library(pals)
+
+df <- data.frame(
+  a = 0:8,
+  b = 0:8,
+  c = 0:8
+) %>% 
+  expand(a, b, c) %>% 
+  filter(a != b) %>% 
+  filter(b != c) %>% 
+  filter(a != c) %>% 
+  mutate(n = row_number())
+
+plot_permutations <- df %>% 
+  ggplot() +
+  geom_tile(data = NULL,
+            aes(1, 1,
+                height = 3.1, 
+                width = 3.1),
+            fill = "#c79274",
+            color = NA) +
+  geom_tile(aes(a %% 3, a %% 3, 
+                fill = factor(a)),
+            color = NA) +
+  geom_tile(aes(b %% 3, b %% 3, 
+                fill = factor(b)),
+            color = NA) +
+  geom_tile(aes(c %% 3, c %% 3, 
+                fill = factor(c)),
+            color = NA) +
+  scale_fill_manual(values = as.vector(alphabet2(n = 9))) +
+  facet_wrap(vars(n), ncol = 18) +
+  coord_fixed(expand = F) +
+  theme_void() +
+  theme(plot.background = element_rect(fill = "#e1b09c", 
+                                       color = NA),
+        legend.position = "none",
+        strip.text = element_blank(),
+        plot.margin = margin(20, 20, 20, 20)
+        )
+
+
+ ggsave(here::here("figures", "PermutationGrid.png"), dpi = 320, width = 11.2, height = 16.8, units = "cm")
+
+```
