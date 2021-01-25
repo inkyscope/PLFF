@@ -1,5 +1,5 @@
 ---
-title: "Royal2"
+title: "500Lines"
 author: "Sung Inkyung"
 date: '2021 1 25'
 output: html_document
@@ -49,6 +49,6 @@ ggplot(lns) +
     plot.background = element_rect(fill = "#4f4a4b", 
                                    color = NA)
   ) +
-  ggsave(here::here("figures", "Royal2.png"), dpi = 320, width = 13, height = 13, units = "cm")
+  ggsave(here::here("figures", "500Lines.png"), dpi = 320, width = 13, height = 13, units = "cm")
 ```
 
