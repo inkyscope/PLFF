@@ -1,0 +1,80 @@
+---
+title: "VivaldiScore"
+author: "Sung Inkyung"
+date: '2021 2 1'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+### Coding Credit[genuary2021 by georgios karamanis] (https://github.com/gkaramanis/aRtist/blob/main/genuary/2021/2021-28/2021-28.R) 
+```{r}
+library(tidyverse)
+library(tuneR)
+```
+
+
+```{r}
+vivaldi_au1 <- readMidi("C:/Users/inkyscope/Documents/projectR/PLFF/data/autumn_no1_allegro_gp.mid")
+
+vivaldi_sp1 <- readMidi("C:/Users/inkyscope/Documents/projectR/PLFF/data/spring_no1_allegro_gp.mid")
+```
+
+
+```{r}
+viv_notes_au1 <- vivaldi_au1 %>%
+  getMidiNotes() %>% 
+  mutate(
+    t = time/max(time) * 2 * pi - pi / 2,
+    concerto = "Autumn (Allegro)"
+    )
+```
+
+
+```{r}
+viv_notes_sp1 <- vivaldi_sp1 %>%
+  getMidiNotes() %>% 
+  mutate(
+    t = time/max(time) * 2 * pi - pi / 2,
+    concerto = "Spring (Allegro)"
+    )
+```
+
+
+```{r}
+viv_notes <- viv_notes_au1 %>% 
+  bind_rows(viv_notes_sp1)
+```
+
+```{r}
+library(pals)
+scale_fill_manual(values=as.vector(polychrome(26)))
+```
+```{r}
+plot_vivaldi <- viv_notes %>% 
+  ggplot() +
+  geom_point(aes(x = note * cos(t),
+                 y = -note * sin(t),
+                 size = length,
+                 color = factor(track),
+                 alpha = velocity),
+             stroke = 0) +
+  scale_size_continuous(range = c(0, 21)) +
+  scale_alpha_continuous(range = c(0.3, 0.7)) +
+  scale_color_manual(values = as.vector(rev(alphabet2(15)))) +
+  coord_fixed(clip = "off") +
+  facet_wrap(vars(concerto)) +
+  theme_void(base_size = 24) +
+  theme(legend.position = "none",
+        plot.background = element_rect(fill = "#e3d796",
+                                       color = NA),
+        panel.spacing = unit(0, "lines"),
+        strip.text = element_text(color = "#017c95",
+                                  margin = margin(t = 5,
+                                                  b = 9)),
+        plot.margin = margin(20, 10, 20, 10))
+
+ggsave(here::here("figures", "VivaldiScore.png"), dpi = 320, width = 37, height = 15.5, units = "cm")
+```
+
