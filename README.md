@@ -1,9 +1,11 @@
 # PLFF
 another personal take for a generative art enjoined by color from point, line, plane (Punkt , Linie ,  Fläche, and Farbe)
 
+### Asemic Writing
+![Asemic Writing](https://github.com/inkyscope/PLFF/blob/master/figures/AsemicWriting.png)
+
 ### Vivaldi Score
 ![Vovaldi Score](https://github.com/inkyscope/PLFF/blob/master/figures/VivaldiScore.png)
-
 
 ### Poissoned Points
 ![Poissoned Points](https://github.com/inkyscope/PLFF/blob/master/figures/PoissonedPoints.png)
