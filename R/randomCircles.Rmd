@@ -1,0 +1,65 @@
+---
+title: "Untitled"
+author: "Sung Inkyung"
+date: '2021 11 29'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+### Source[Art by Jake Lawlor; R Projects, genuary19_3.55.png]
+```{r}
+library(tidyverse)
+library(ggforce)
+```
+
+
+```{r}
+n <- 20 # set number of circles
+cols <- 14 # set numer of columns
+
+df <- 
+  # make base grid
+  data.frame(group = 1:(n*cols),
+             basex = rep(c(1:cols), each = n) * 4,
+             basey = (1:n)) %>% 
+  # generate randomness
+  mutate(
+    x = lapply(basey/2, function(x) {
+      y = rnorm(4, basey, basey)
+      x * c(-1, 1, 1, -1) + y
+    }),
+    y = lapply(basey/2, function(x) {
+      y = rnorm(4, basey, basey)
+      x * c(1, 1, -1, -1) + y
+    })
+  ) %>% 
+  unnest(cols = c(x, y)) %>% 
+  # add randomness to base grid and expand
+  mutate(newy = y + basey * 10.5,
+         newx = x + basex * 3.8)
+
+ plot <- df %>% 
+    ggplot(aes(x = newx, y = newy,
+             color = newy,
+             group = group,
+             fill = newy)) +
+  geom_bspline_closed(show.legend = F,
+                      alpha = .7,
+                      size = 8, 
+                      fill = NA) +
+  coord_equal(expand = T) +
+  scale_y_reverse() +
+  scale_color_gradient(high = "#2e6e89",
+                       low = "#ddeedd") +
+  theme_void() +
+  theme(panel.background = element_rect(color = "gray20",
+                                        fill = "snow",
+                                        size = .5),
+        plot.background = element_rect(color = "black",
+                                       size = .3),
+        plot.margin = margin(.55, .55, .55, .55, "cm"))
+
+ggsave(plot, filename = here::here("figures", "randomCircles.png"), dpi = 300)
+```
