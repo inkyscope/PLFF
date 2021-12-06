@@ -1,0 +1,50 @@
+---
+title: "Waves"
+author: "Sung Inkyung"
+date: '2021 12 6'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggstream)
+library(tidyverse)
+library(nord)
+```
+
+
+```{r}
+m = 100
+
+waves <- data.frame(x = 1:m, color = sample(1:5)) %>% 
+  rowwise() %>% 
+  mutate(
+    v = 0.15 + runif(1, max = 0.025)
+    ) %>% 
+  ungroup()
+
+pal <- sample(nord(palette = "frost", 100))
+
+
+ggplot(waves) +
+  geom_stream(aes(x = x, y = v, 
+                  color = colorspace::darken(factor(v)), 
+                  fill = factor(v)), 
+              type = "proportional", 
+              bw = 1, 
+              extra_span = 0.9, 
+              size = 0.2) +
+  scale_color_manual(values = pal) +
+  scale_fill_manual(values = pal) +
+  coord_cartesian(expand = FALSE) +
+  theme_void() +
+  theme(
+    legend.position = "none"
+    ) 
+ggsave(here::here("figures", "frostWaves.png"))
+```
+
+
