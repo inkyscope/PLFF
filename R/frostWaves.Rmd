@@ -8,7 +8,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
+### Sourc[generative art by @geokarmanis] (https://github.com/gkaramanis/aRtist/blob/main/waves/waves.R)
 ```{r}
 library(ggstream)
 library(tidyverse)
@@ -44,7 +44,7 @@ ggplot(waves) +
   theme(
     legend.position = "none"
     ) 
-ggsave(here::here("figures", "frostWaves.png"))
+ggsave(here::here("figures", "frostWaves.png"), dpi = 320, width = 5, height = 5)
 ```
 
 
