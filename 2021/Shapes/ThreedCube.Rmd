@@ -1,0 +1,232 @@
+---
+title: "ThreedCube"
+author: "Sung Inkyung"
+date: '2021 1 27 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+### Source[threed by coolbutuseless] (https://github.com/coolbutuseless/ggthreed)
+### Source[ggthreed] (https://rdrr.io/github/coolbutuseless/ggthreed/f/vignettes/animated-anaglyph.Rmd)
+```{r}
+devtools::install_github("coolbutuseless/threed")
+devtools::install_github("coolbutuseless/ggthreed")
+```
+
+
+```{r}
+library(tidyverse)
+library(threed)
+library(ggthreed)
+```
+
+```{r}
+# set up plotting parameters
+obj <- threed::mesh3dobj$icosahedron
+
+nframes <- 60
+
+angles <- seq(0, 2*pi, 
+              length.out = nframes + 1) %>% 
+  head(-1)
+
+camera_to_world <- look_at_matrix(eye = c(5, 0, 0),
+                                  at = c(0, 0, 0))
+
+world_to_camera <- threed::invert_matrix(camera_to_world)
+```
+
+```{r}
+xangle = 0 
+yangle = xangle + pi/2
+zangle = xangle * 2
+view_size = 0.3
+
+obj_rot <- obj %>%
+    rotate_by(angle = xangle, v = vec3(x = 1)) %>%
+    rotate_by(angle = yangle, v = vec3(y = 1)) %>%
+    rotate_by(angle = zangle, v = vec3(z = 1)) %>%
+    transform_by(world_to_camera) %>%
+    perspective_projection(n=1, f=5) %>%
+    identity()
+  
+  obj_df <- as.data.frame(obj_rot) %>% 
+    subset(!hidden) %>%
+    transform(shade = (fny + fnx) / 2)
+  
+   p <- ggplot(obj_df, aes(x, y)) +
+    geom_polygon(aes(group = zorder, z = z), 
+                 fill = NA, alpha = 0.5,
+                 stat = 'anaglyph', 
+                 zscale = 0.03, 
+                 zoffset = -1.9, 
+                 zinvert = FALSE) +
+    theme_void() +
+    theme(legend.position = 'none') +
+    coord_equal(xlim = c(-view_size, view_size), y = c(-view_size, view_size)) +
+    NULL
+
+```
+
+
+```{r}
+# create a plot of a rotated object
+plot_rotated_obj <- function(obj, world_to_camera, 
+                             xangle = 0, 
+                             yangle = xangle + pi/2, 
+                             zangle = xangle * 2, 
+                             view_size = 0.3) {
+  obj_rot <- obj %>%
+    rotate_by(angle = xangle, v = vec3(x = 1)) %>%
+    rotate_by(angle = yangle, v = vec3(y = 1)) %>%
+    rotate_by(angle = zangle, v = vec3(z = 1)) %>%
+    transform_by(world_to_camera) %>%
+    perspective_projection(n = 1, f = 5) %>%
+    identity()
+  
+  obj_df <- as.data.frame(obj_rot) %>% 
+    subset(!hidden) %>%
+    transform(shade = (fny + fnx) / 2)
+  
+   p <- ggplot(obj_df, aes(x, y)) +
+    geom_polygon(aes(group = zorder, 
+                     z = z), 
+                 fill = NA, 
+                 alpha = 0.5,
+                 stat = 'anaglyph', 
+                 zscale = 0.03, 
+                 zoffset = -1.9, 
+                 zinvert = FALSE) +
+    theme_void() +
+    theme(legend.position = 'none') +
+    coord_equal(xlim = c(-view_size, view_size), y = c(-view_size, view_size)) +
+    NULL
+
+  p
+}
+
+plot_rotated_obj(obj, world_to_camera, 
+                 xangle = angles[1], 
+                 view_size = 0.25)
+```
+
+
+```{r}
+png_files <- seq_along(angles) %>% 
+  purrr::map_chr(function(i) {
+    
+  cat("."); flush.console()
+  
+  p <- plot_rotated_obj(obj, world_to_camera, xangle = angles[i], 
+                        view_size = 0.25)
+  
+  png_file <- glue::glue("{tempdir()}/{i}.png")
+  
+  ggsave(png_file, p, width=8, height=8, dpi = 75)
+  
+  png_file
+  
+})
+
+gif_file <- gifski::gifski(
+  png_files, gif_file = "vignettes/gif/animated-anaglyph.gif",
+  width = 400, height = 400, delay = 0.1
+)
+```
+
+### Source[genuary2021 by gkaramanis] (https://github.com/gkaramanis/aRtist/blob/main/genuary/2021/2021-26/2021-26.R)
+```{r}
+
+obj_list <- list()
+
+b = 16
+
+for (i in 1:b^2) {
+  camera_to_world <- look_at_matrix(eye = c(3, 3, 4), 
+                                    at = c(0, 0, 0))
+  
+  obj <- mesh3dobj$cube %>%
+    rotate_by(angle = rnorm(1, 0, pi/8), 
+              v = c(0, i %% 4, 0)) %>% 
+    transform_by(invert_matrix(camera_to_world)) %>%
+    orthographic_projection() %>% 
+    as.data.frame() %>% 
+    mutate(n = i - 1)
+  
+  obj_list[[i]] <- obj
+}
+
+objs <- obj_list %>% 
+  reduce(rbind)
+
+plot_cube <- objs %>% 
+  ggplot() +
+  geom_polygon(aes(x + 4 * n %% b, y + 4 * n %/% b, 
+                   group = interaction(n, zorder), 
+                   fill =  0.45 * fnx + fny), 
+               color = "grey20") +
+  scale_fill_gradient(high = "#b0f303",
+                      low = "#e0eee0") + #'#ff3d40'
+  coord_cartesian(expand = FALSE, clip = "off") +
+  # facet_wrap(vars(n)) +
+  theme_void() +
+  theme(
+    legend.position = "none",
+    plot.background = element_rect(fill = "#2b2b87", 
+                                   color = NA),
+    plot.margin = margin(20, 20, 20, 20)
+  )
+```
+
+
+```{r manipulate}
+obj_list <- list()
+
+b = 16
+
+for (i in 1:b^2) {
+  camera_to_world <- look_at_matrix(eye = c(1.5, 1.75, 3), 
+                                    at = c(0, 0, 0))
+  
+
+  obj <- mesh3dobj$cube %>% #icosahedron, cube, tetrahedron, octahedron, dodecahedron, cuboctahedron
+    rotate_by(angle = rnorm(1, 0, pi/2), 
+              v = c(0, i %% 4, 0)) %>% 
+    transform_by(invert_matrix(camera_to_world)) %>%
+    perspective_projection() %>% 
+    as.data.frame() %>% 
+    mutate(n = i - 1)
+  
+  obj_list[[i]] <- obj
+}
+
+objs <- obj_list %>% 
+  reduce(rbind) %>% 
+  subset(!hidden) %>%
+    transform(shade = (fny + fnx) / 2)
+
+pp <- objs %>%
+  ggplot(aes(x, y, z = z, 
+           group = element_id)) +
+  geom_polygon(aes(size = hidden), 
+               #stat = 'anaglyph',
+               #zscale = 0.02, 
+               #zoffset = -1.4, 
+               #zinvert = FALSE,
+               fill = NA, 
+               colour = '#5d8a82')  +
+  scale_linetype_manual(values = c('TRUE' = "FF", 
+                                   'FALSE' = 'solid')) +
+  scale_size_manual(values = c('TRUE' = 0.1, 
+                               'FALSE' = 0.5)) +
+  theme_void() +
+  theme(
+    legend.position = "none",
+    plot.background = element_rect(fill = "#1e2240", 
+                                   color = NA),
+    plot.margin = margin(20, 20, 20, 20)
+  )
+```
+

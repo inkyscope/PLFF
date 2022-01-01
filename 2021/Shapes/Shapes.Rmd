@@ -1,0 +1,73 @@
+---
+title: "Shapes"
+author: "Sung Inkyung"
+date: '2020 8 15 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+### Source[aRt by gkaramains] (https://github.com/gkaramanis/aRt/blob/master/shapes/shapes.R)
+```{r}
+library(tidyverse)
+library(ambient)
+```
+
+
+```{r}
+shapes <- c(7, 8, 9, 12, 14)
+colors <- c("black", "white")
+
+grid_point <- long_grid(x = seq(0, 40), y = seq(0, 30)) %>% 
+  rowwise() %>% 
+  mutate(shape = sample(shapes, 1),
+         small_shapes = round(runif(1, min = 0, max = 1)),
+         pal = sample(colors, 1))
+
+ggplot(grid_point) +
+  geom_point(aes(x = x, y = y, 
+                 shape = as.factor(shape),
+                 color = pal),
+             fill = NA,
+             size = 3.5) +
+  coord_fixed(expand = F,
+              xlim = c(-0.5, 40.5),
+              ylim = c(-0.5, 30.5)) +
+  scale_shape_manual(values = shapes) +
+  scale_color_manual(values = colors) +
+  scale_fill_manual(values = colors) +
+  theme_void() +
+  theme(legend.position = "none",
+        plot.background = element_rect(fill = "white",
+                                       color = NA)) +
+  ggsave(here::here("figures", "shapes_white.png"), dpi = 320,
+         width = 8, height = 6)
+```
+
+
+```{r}
+plot_black <- ggplot(grid_point) +
+  geom_point(aes(x = x, y = y, 
+                 shape = as.factor(shape),
+                 color = pal),
+             fill = NA,
+             size = 3.5) +
+  coord_fixed(expand = F,
+              xlim = c(-0.5, 40.5),
+              ylim = c(-0.5, 30.5)) +
+  scale_shape_manual(values = shapes) +
+  scale_color_manual(values = colors) +
+  scale_fill_manual(values = colors) +
+  theme_void() +
+  theme(legend.position = "none",
+        plot.background = element_rect(fill = "black",
+                                       color = NA)) +
+  ggsave(here::here("figures", "shapes_black.png"), 
+         dpi = 320,
+         width = 8, height = 6)
+```
+
+
+
+

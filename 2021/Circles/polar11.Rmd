@@ -1,0 +1,80 @@
+---
+title: "polar11"
+author: "Sung Inkyung"
+date: '2021 1 12 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+###Source[Radial Patterns in ggplot2 by ijeamaka-anyene] (https://github.com/Ijeamakaanyene/patterns)
+```{r}
+library(ggplot2)
+library(dplyr)
+```
+
+
+```{r}
+rings <- tibble(
+  x = 1, 
+  xend = 5, 
+  y = c(2, 5),
+  yend = c(2, 5)
+)
+
+points <- tibble(
+  x = c(2, 4, 1.5, 3.5),
+  y = c(2, 2, 5, 5)
+)
+
+ggplot() +
+  geom_segment(data = rings,
+               aes(x = x, xend = xend,
+                   y = y, yend = yend),
+               color = "white") +
+  geom_point(aes(x = 3, y = 0),
+             size = 4, 
+             color = "#c74a00") +
+  geom_point(data = points,
+             aes(x = x, y = y),
+             size = 3,
+             color = "#f39200") +
+  scale_y_continuous(limits = c(0, 5))
+```
+
+
+```{r}
+ggplot() +
+  geom_segment(data = rings,
+               aes(x = x, xend = xend,
+                   y = y, yend = yend),
+               color = "#90c8ea") +
+  geom_point(aes(x = 3, y = 0),
+             size = 4, 
+             color = "#ce25be") +
+  geom_point(data = points,
+             aes(x = x, y = y),
+             size = 3,
+             color = "#3486b8") +
+  scale_y_continuous(limits = c(0, 5)) +
+  coord_polar() +
+  theme(
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "#4d164d"),
+    plot.background = element_rect(fill = "#4d164d"),
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  )
+```
+
+
+```{r}
+```
+
+
+```{r}
+```
+

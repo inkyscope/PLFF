@@ -1,0 +1,93 @@
+---
+title: "Asemic Writing"
+author: "Sung Inkyung"
+date: '2021 10 26'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+### Source[generative art by @gkaramanis] (https://github.com/gkaramanis/aRtist/blob/main/asemic/asemic.R)
+### Source[sand-glyphs] (https://inconvergent.net/generative/sand-glyphs/)
+### Source[Cecil Touchon] (https://ceciltouchon.com/)
+```{r}
+library(tidyverse)
+library(ggforce)
+```
+
+
+```{r}
+np = 15
+s = 5
+z = 0.7
+
+typo1 <- expand.grid(x = 1:(1.2 * np), 
+                   y = 1:np) %>% 
+  rowwise() %>% 
+  mutate(
+    a = list(runif(s, 0, 2 * pi)),
+    rx = list(x + seq(0.1, 0.5, length.out = s) * cos(a)),
+    ry = list(y + seq(0.1, 0.3, length.out = s) * sin(a))
+  ) %>% 
+  ungroup() %>% 
+  unnest(c(rx, ry)) %>% 
+  rowwise() %>% 
+  mutate(
+    size = runif(1, 0, 2),
+    size = if_else(size < z, 0, size)
+  ) %>% 
+  ungroup()
+
+ggplot(typo1, 
+       aes(x = rx, y = ry, 
+           group = y, 
+           size = size)) +
+  geom_bspline2(n = 800, 
+                lineend = "round") +
+  scale_size_continuous(range = c(0, 0.8)) +
+  coord_fixed() +
+  theme_void() +
+  theme(legend.position = "none",
+        plot.background = element_rect(fill = "#c5c6d0",
+                                       color = NA))
+```
+
+```{r}
+np = 15
+s = 5
+z = 0.7
+
+typo2 <- expand.grid(x = 1:(1.2 * np), 
+                   y = 1:np) %>% 
+  rowwise() %>% 
+  mutate(
+    a = list(runif(s, 0, 2 * pi)),
+    rx = list(x + seq(0.1, 0.5, length.out = s) * cos(a)),
+    ry = list(y + seq(0.1, 0.3, length.out = s) * sin(a))
+  ) %>% 
+  ungroup() %>% 
+  unnest(c(rx, ry)) %>% 
+  rowwise() %>% 
+  mutate(
+    size = runif(1, 0, 2),
+    size = if_else(size < z, 0, size)
+  ) %>% 
+  ungroup()
+
+ggplot(typo2, 
+       aes(x = rx, y = ry, 
+           group = y, 
+           size = size)) +
+  geom_bspline2(n = 800, 
+                lineend = "round") +
+  scale_size_continuous(range = c(0, 0.8)) +
+  coord_fixed() +
+  theme_void() +
+  theme(legend.position = "none",
+        plot.background = element_rect(fill = "#c2b280",
+                                       color = NA))
+
+ggsave(here::here("2021", "AsemicWriting", "AsemicWriting.png"), dpi = 320, width = 20, height = 15, units = "cm")
+```
+

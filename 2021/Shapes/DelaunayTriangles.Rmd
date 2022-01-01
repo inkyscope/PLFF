@@ -1,0 +1,63 @@
+---
+title: "Delaunay triangles"
+author: "Sung Inkyung"
+date: '2021 1 23'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+#### Source[ggforce: Voronoi tesselation and delaunay triangulation] (https://ggforce.data-imaginist.com/reference/geom_delvor.html)
+```{r}
+library(tidyverse)
+library(ggforce)
+library(poissoned)
+library(colorspace)
+```
+
+
+```{r}
+df <- poisson_disc(50, 50, 
+                   xinit = 250,
+                   yinit = 250,
+                   keep_idx = T) %>% 
+  mutate(r = runif(length(x), 2, 8)) # runif(n, min, max)
+
+circles <- df %>% 
+  filter(between(idx, 0, 80) | between(idx, 270, 500))
+
+points <- df %>% 
+  filter(between(idx, 80, 270))
+
+
+library(deldir)
+
+ggplot(circles) +
+  geom_delaunay_segment(data = points, 
+                        aes(x, y),
+                        color = "#171616",
+                        size = .45,
+                        alpha = .7) +
+  geom_circle(aes(x0 = x, y0 = y, r = r, size = r),
+              fill = "#cc0066", color = "#435678", n = 30) +
+  geom_circle(aes(x0 = x, y0 = y, r = r/3, size = r/2),
+              fill = "#cc0066", color = "#435678", n = 30) +
+  geom_point(data = points, aes(x, y),
+             color = "#119933", size = 1) +
+  scale_size_continuous(range = c(0.4, 1.8)) +
+  coord_fixed(expand = F) +
+  xlim(-10, 510) +
+  ylim(-10, 510) +
+  theme_void() +
+  theme(legend.position = "none",
+        plot.background = element_rect(fill = "#f8e862",
+                                       color = NA)) +
+  ggsave(here::here("figures", "Delaunay triangles.png"), dpi = 320, width = 15, height = 15, units = "cm")
+  
+```
+
+
+```{r}
+```
+
