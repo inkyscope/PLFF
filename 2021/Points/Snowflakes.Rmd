@@ -1,7 +1,7 @@
 ---
 title: "Snowflakes"
 author: "Sung Inkyung"
-date: '2021 1 2 '
+date: '2021 1 2'
 output: html_document
 ---
 
@@ -165,12 +165,9 @@ limit = 3
 y = runif(n, 0, limit)
 plot_random(n = n, limit = limit, set.y = y)
 
-## png 
-##   2
-
 ```
+
 ```{r}
 knitr::include_graphics("snowflakes_0.svg")
 
 ```
-

@@ -1,7 +1,7 @@
 ---
-title: "Untitled"
+title: "PoissonedPoints"
 author: "Sung Inkyung"
-date: '2021 1 28 '
+date: '2021 1 28'
 output: html_document
 ---
 
@@ -34,8 +34,9 @@ ggplot(points) +
     legend.position = "none",
     panel.grid = element_blank(),
     axis.title = element_blank()
-  ) +
-  ggsave(here::here("figures", "PoissonedPoints.png"), dpi =320, width = 20, height = 20, units = "cm")
+  ) 
+
+ggsave(here::here("2021", "Points", "PoissonedPoints.png"), dpi =320, width = 20, height = 20, units = "cm")
 ```
 
 ```{r}
@@ -45,8 +46,8 @@ points <- poissoned::poisson_disc(ncols = 30,
                                   keep_boundary = TRUE, 
                                   verbose = TRUE)
 
-poisson_disc(): 300 x 200
-minimum distance = 14.14
+poisson_disc = 300*200
+minimum_distance = 14.14
 
 points$boundary <- with(points, x < 0 | y < 0 | x > 300 | y > 200)
 

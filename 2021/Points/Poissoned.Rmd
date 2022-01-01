@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "Poissoned"
 author: "Sung Inkyung"
 date: '2021 1 23 '
 output: html_document
@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(poissoned)
 
-devtools::install_github("coolbutuseless/poissoned") 
+#devtools::install_github("coolbutuseless/poissoned") 
 ```
 
 
@@ -36,7 +36,8 @@ ggplot(df_points) +
   theme_void() +
   theme(legend.position = "none",
         plot.background = element_rect(fill = "gray90",
-                                       color = NA)) +
-  ggsave(here::here("figures", "poissoned.png"), dpi = 320, width = 7, height = 7)
+                                       color = NA))
+
+ggsave(here::here("2021", "Points", "Poissoned.png"), dpi = 320, width = 7, height = 7)
 ```
 

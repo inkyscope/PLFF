@@ -1,0 +1,128 @@
+---
+title: "y-Randomness"
+author: "Sung Inkyung"
+date: '2021 1 25'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+### Coding Credit [genuary2021: Day 19 prompt: Increase the randomness along the Y-axis by Jake Lawlor ] (https://twitter.com/Jake_Lawlor1/status/1351658324731817985)
+```{r}
+library(tidyverse)
+library(ggforce)
+library(ragg)
+```
+
+
+```{r practice by imitating}
+n <-  20 # set number of circles
+cols <-  14 # set number of columns
+
+df1 <- 
+  # make base grid
+  data.frame(group = 1:(n*cols), #280
+             basex = rep(c(1:cols), each = n)*4, #56
+             basey = (1:n)) %>%  
+  # generate randomness
+  mutate(
+    x = lapply(basey/2, function(x)
+      {y = rnorm(4, basey, basey)
+      x*c(-1, 1, 1, -1) + y}),
+    y = lapply(basey/2, function(x)
+    {y = rnorm(4, basey, basey)
+    x*c(1, 1, -1, -1) + y})
+  ) %>% 
+  unnest(cols = c(x, y)) %>% 
+  # add randonmnessto base grid and expand
+  mutate(newy = y + basey*10.5,
+         newx = x + basex*3.8)
+
+
+  # plot
+  plot1 <- df1 %>% 
+    ggplot(aes(x = newx, y = newy,
+               color = (newy),
+               group = group,
+               fill = (newy))) +
+    geom_bspline_closed(show.legend = F,
+                        alpha = .7,
+                        size = .8, 
+                        fill = NA) +
+    coord_equal(expand = T) +
+    theme_void() +
+    # flip plot
+    scale_y_reverse() +
+    scale_color_gradient(high = "#40556b",
+                         low = "#67b5af") +
+    theme(panel.background = element_rect(color = "gray20",
+                                          fill = "snow",
+                                          size = 5),
+         plot.background = element_rect(color = "black",
+                                        size = .3),
+         plot.margin = margin(.55, .55, .55, .55, "cm"))
+
+```
+Mark Roland
+@rolandojones
+·
+Jan 24
+Replying to 
+@Jake_Lawlor1
+Is there an equation for these shapes? Would you be willing to share?
+
+Jake Lawlor
+@Jake_Lawlor1
+·
+
+Sure! It's not online yet, but here's a screenshot of messy R code. Basically it's anchor points on a grid expanded into 4 corners with generated randomness incorporated, then closed B-splines around each 4-point group. 2nd pic shows a subset with anchor points.
+```{r}
+n <-  20 # set number of circles
+cols <-  14 # set number of columns
+
+
+df2 <- 
+  # make base grid
+  data.frame(group = 1:(n*cols), #280
+             basex = rep(c(1:cols), each = n)*4, #56
+             basey = (1:n)) %>% 
+  # generate randomness
+  mutate(
+    x = lapply(basey/2, function(x)
+      {y = rnorm(4, basey, basey)
+      x*c(-1, 1, 1, -1) + y}),
+    y = lapply(basey/2, function(x)
+    {y = rnorm(4, basey, basey)
+    x*c(1, 1, -1, -1) + y})
+  ) %>% 
+  unnest(cols = c(x, y)) %>% 
+  # add randonmnessto base grid and expand
+  mutate(newy = y + basey*7.5,
+         newx = x + basex*2.8)
+
+View(df2)
+  # plot
+ plot2 <- df2 %>% 
+   ggplot(aes(x = newx, y = newy,
+              color = (newy),
+              group = group,
+              fill = (newy))) +
+   geom_bspline_closed(show.legend = F,
+                       alpha = .7,
+                       size = .8, 
+                       fill = NA) +
+   coord_equal(expand = T) +
+   theme_void() +
+   # flip plot
+   scale_y_reverse() +
+   scale_color_gradient(high = "#40556b",
+                        low = "#67b5af") +
+   theme(panel.background = element_rect(color = "gray20",
+                                         fill = "snow",
+                                         size = 5),
+         plot.background = element_rect(color = "black",
+                                        size = .3),
+         plot.margin = margin(.55, .55, .55, .55, "cm"))
+```
+

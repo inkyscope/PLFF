@@ -1,0 +1,146 @@
+---
+title: "VivaldiScore"
+author: "Sung Inkyung"
+date: '2021 2 1'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+### Coding Credit[genuary2021 by georgios karamanis] (https://github.com/gkaramanis/aRtist/blob/main/genuary/2021/2021-28/2021-28.R) 
+```{r}
+library(tidyverse)
+library(tuneR)
+library(PNWColors)
+library(pals)
+library(ragg)
+```
+
+
+```{r}
+vivaldi_au1 <- readMidi("C:/Users/inkyscope/Documents/projectR/PLFF/data/autumn_no1_allegro_gp.mid")
+
+vivaldi_sp1 <- readMidi("C:/Users/inkyscope/Documents/projectR/PLFF/data/spring_no1_allegro_gp.mid")
+```
+
+
+```{r}
+viv_notes_au1 <- vivaldi_au1 %>%
+  getMidiNotes() %>% 
+  mutate(
+    t = time/max(time) * 2 * pi - pi / 2,
+    concerto = "Autumn (Allegro)"
+    )
+
+viv_notes_sp1 <- vivaldi_sp1 %>%
+  getMidiNotes() %>% 
+  mutate(
+    t = time/max(time) * 2 * pi - pi / 2,
+    concerto = "Spring (Allegro)"
+    )
+
+viv_notes <- viv_notes_au1 %>% 
+  bind_rows(viv_notes_sp1)
+```
+
+
+```{r}
+plot_vivaldi <- viv_notes %>% 
+  ggplot() +
+  geom_point(aes(x = note * cos(t),
+                 y = -note * sin(t),
+                 size = length,
+                 color = factor(track),
+                 alpha = velocity),
+             stroke = 0) +
+  scale_size_continuous(range = c(0, 21)) +
+  scale_alpha_continuous(range = c(0.3, 0.7)) +
+  scale_color_manual(values = as.vector(rev(ocean.phase(15)))) +
+  coord_fixed(clip = "off") +
+  labs(title = "Autumn and Spring from Vivaldi Four Seasons",
+       caption = "Source: #genuary2021 by @geokaramanis | Graphic: Sung Inkyung") +
+  facet_wrap(vars(concerto)) +
+  theme_void(base_size = 24) +
+  theme(legend.position = "none",
+        plot.background = element_rect(fill = "#e3d796",
+                                       color = NA),
+        panel.spacing = unit(0, "lines"),
+        plot.title = element_text(size = 28,
+                                  hjust = .5,
+                                  color = "#314657",
+                                  margin = margin(b = 20)),
+        plot.caption = element_text(size = 9,
+                                    color = "#4287f5",
+                                    hjust = 0.5,
+                                    margin = margin(t = 15)),
+        strip.text = element_text(color = "#314657",
+                                  margin = margin(t = 5,
+                                                  b = 9)),
+        plot.margin = margin(10, 10, 10, 10))
+
+ggsave(here::here("2021", "Genuary", "2021", "VivaldiScore.png"), dpi = 320, width = 30, height = 20, units = "cm")
+```
+
+```{r}
+pals <- pnw_palette("Sunset2", 15)
+
+plot_autumn <- viv_notes_au1 %>% 
+  ggplot() +
+  geom_point(aes(x = note * cos(t),
+                 y = -note * sin(t),
+                 size = length,
+                 color = factor(track),
+                 alpha = velocity),
+             stroke = 0) +
+  scale_size_continuous(range = c(0, 21)) +
+  scale_alpha_continuous(range = c(0.3, 0.7)) +
+  scale_color_manual(values = pals) +
+  coord_fixed(clip = "off") +
+  theme_void(base_size = 24) +
+  theme(legend.position = "none",
+        plot.background = element_rect(fill = "#57bfff",
+                                       color = NA),
+        panel.spacing = unit(0, "lines"),
+        strip.text = element_text(color = "#314657",
+                                  margin = margin(t = 5,
+                                                  b = 9)),
+        plot.margin = margin(20, 10, 20, 10))
+  
+```
+  
+
+```{r}
+pals <- pnw_palette("Spring", 15)
+
+plot_spring <- viv_notes_sp1 %>% 
+  ggplot() +
+  geom_point(aes(x = note * cos(t),
+                 y = -note * sin(t),
+                 size = length,
+                 color = factor(track),
+                 alpha = velocity),
+             stroke = 0) +
+  scale_size_continuous(range = c(0, 21)) +
+  scale_alpha_continuous(range = c(0.3, 0.7)) +
+  scale_color_manual(values = pals) +
+  coord_fixed(clip = "off") +
+  theme_void(base_size = 24) +
+  theme(legend.position = "none",
+        plot.background = element_rect(fill = "#f5f5dc",
+                                       color = NA),
+        panel.spacing = unit(0, "lines"),
+        strip.text = element_text(color = "#314657",
+                                  margin = margin(t = 5,
+                                                  b = 9)),
+        plot.margin = margin(20, 10, 20, 10))
+```
+
+```{r}
+library(patchwork)
+
+
+plot_final <- plot_spring|plot_autumn
+
+```
+

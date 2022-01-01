@@ -1,0 +1,41 @@
+---
+title: "Whitewater"
+author: "Sung Inkyung"
+date: '2021 1 21'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+### Source[aRtist by gkaramanis] (https://github.com/gkaramanis/aRtist/blob/main/genuary/2021/2021-19/2021-19.R)
+```{r Practice}
+library(tidyverse)
+library(ggforce)
+
+n = 150
+
+rows_df <- data.frame(y = 1:n) %>% 
+  rowwise() %>% 
+  mutate(x = list(-n/2:n/2 + rnorm(n - 1, 0, sd = y^3))) %>% 
+  ungroup() %>% 
+  unnest(x) %>% 
+  arrange(y, x) %>% 
+  group_by(y) %>% 
+  mutate(xn = row_number()) %>% 
+  ungroup()
+
+ggplot(rows_df, aes(x, y^2, group = xn)) +
+  geom_bspline(size = .3, n = 100, color = "#e3256b") +
+  geom_bspline(size = .15, n = 500, color = "#fcfafb") +
+  scale_y_reverse() +
+  coord_cartesian(expand = F) +
+  theme_void() +
+  theme(plot.background = element_rect(fill = "#484753", 
+                                       color = NA),
+        plot.margin = margin(0, 20, 0, 20))
+
+ggsave(here::here("2021", "Lines", "Whitewater.png"), width = 7, height = 7, units = "cm")
+
+
+```
