@@ -1,0 +1,39 @@
+---
+title: "1. Draw 10000 of something"
+author: "Sung Inkyung"
+date: '2022 1 1'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+### Source[flametree package ](https://cran.r-project.org/web/packages/flametree/flametree.pdf)
+
+```{r}
+#devtools::install_github("djnavarro/flametree")
+library(flametree)
+library(dplyr)
+library(ragg)
+
+set.seed(123)
+
+# pick some colors 
+shades <- c("#002060", "#a56d67", "#11a536", "#b1044f")
+
+# data structure defining the trees
+dat <- flametree_grow(trees = 27,
+                      shift_x = spark_nothing()) %>% 
+  slice(-c(10001:10287))
+
+# draw the plot
+plot <- dat %>% 
+  flametree_plot(
+    background = "antiquewhite",
+    palette = shades,
+    #style = plain" (the default), "voronoi", "wisp", "nativeflora", "minimal", or "themegray"
+    style = "nativeflora" 
+  ) 
+ 
+flametree_save(plot, filename = "22_1_flametree.png", height = 8, width = 8, dpi = 320)
+```
